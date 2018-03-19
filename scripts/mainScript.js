@@ -3,6 +3,10 @@ $(window).on('load', function () {
   //Onglets
   $( "#onglets" ).tabs();
 
+  $('img').on("click", function() {
+    $("#info").dialog();
+  });
+
 //Liste nombre photo
   for (let j = 1; j < 6; j++) {
     $( "#nombreDePhoto" ).append(("<option value='"+j+"'>"+j+"</option>"))
