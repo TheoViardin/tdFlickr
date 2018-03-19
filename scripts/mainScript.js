@@ -1,5 +1,8 @@
 $(window).on('load', function () {
 
+  $( "#onglets" ).tabs();
+
+
   for (let j = 1; j < 6; j++) {
     $( "#nombreDePhoto" ).append(("<option value='"+j+"'>"+j+"</option>"))
   }

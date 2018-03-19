@@ -1,0 +1,42 @@
+.onglets {
+	list-style-type:none;
+	overflow:hidden;
+	margin:10px 0;
+	padding:0;
+}
+
+.onglets li {
+	float:none;
+	display:inline;
+	margin:0;
+	padding:0;
+}
+
+.onglets a {
+	background-color:#A9BCF5;
+	text-decoration:none;
+	height:1.5em;
+	line-height:1.5em;
+	font-weight:700;
+	border:2px solid #dedede;
+	position:relative;
+	float:none;
+	display:inline;
+	margin:0 0 0 6px;
+	padding:0.5em 1em;
+}
+
+.onglets a:hover {
+	background:#f8f8f8;
+}
+
+.onglets li a.active {
+	background:#fff;
+	border-bottom:2px solid #fff;
+	color:#DD4B39;
+}
+
+.onglets > li,.onglets > li > a {
+	float:left;
+	display:block;
+}
