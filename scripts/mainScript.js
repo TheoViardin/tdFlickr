@@ -32,11 +32,18 @@ $(window).on('load', function () {
   $("#faireRequete").on("click", function() {
     $.get("http://api.flickr.com/services/rest/?&method=flickr.photos.search&api_key=56097ac8c6cf97b680539ef25f536f32&text=["+$("#inputNomDeVille").val()+"]&format=json&nojsoncallback=?&per_page="+$("#nombreDePhoto").val(), function (response) {
       console.log(response)
-      $("#photos").empty();
+      $("#tableOnglet-2 tbody").empty()
+      $("#onglet-1").empty();
       if (response.photos.pages >= 0) {
         for (photo of response.photos.photo) {
           console.log("<img src='https://farm"+photo.farm+".staticflickr.com/"+photo.server+"/"+photo.id+"_"+photo.secret+".jpg'>")
-          $("#photos").append("<img src='https://farm"+photo.farm+".staticflickr.com/"+photo.server+"/"+photo.id+"_"+photo.secret+".jpg'>")
+          $("#onglet-1").append("<img src='https://farm"+photo.farm+".staticflickr.com/"+photo.server+"/"+photo.id+"_"+photo.secret+".jpg'>")
+          $.get("http://api.flickr.com/services/rest/?&method=flickr.photos.getInfo&api_key=56097ac8c6cf97b680539ef25f536f32&photo_id="+photo.id+"&format=json&nojsoncallback=?", function (response2) {
+            console.log(response2)
+            $("#tableOnglet-2 tbody").append("<tr><td><img src='https://farm"+response2.photo.farm+".staticflickr.com/"+response2.photo.server+"/"+response2.photo.id+"_"+response2.photo.secret+".jpg'></td><td>"+response2.photo.description._content+"</td><td>"+response2.photo.owner.username+"</td></tr>")
+
+            $("#tableOnglet-2").DataTable()
+          })
         }
       }
     })
