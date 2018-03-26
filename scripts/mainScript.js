@@ -33,6 +33,9 @@ $(window).on('load', function () {
         response(sourceArray)
       })
     },
+    select: function () {
+      $("#faireRequete").click()
+    },
     minLength: 3
   });
 
