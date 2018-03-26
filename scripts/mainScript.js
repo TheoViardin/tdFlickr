@@ -1,14 +1,12 @@
 $(window).on('load', function () {
+  jQuery( '#info' ).dialog( { 'autoOpen': false } );
+  jQuery( '#noImage' ).dialog( { 'autoOpen': false } );
 
   //Onglets
   $( "#onglets" ).tabs();
 
-  $('img').on("click", function() {
-    $("#info").dialog();
-  });
-
 //Liste nombre photo
-  for (let j = 1; j < 6; j++) {
+  for (let j = 1; j < 100; j++) {
     $( "#nombreDePhoto" ).append(("<option value='"+j+"'>"+j+"</option>"))
   }
 
@@ -32,19 +30,34 @@ $(window).on('load', function () {
   $("#faireRequete").on("click", function() {
     $.get("http://api.flickr.com/services/rest/?&method=flickr.photos.search&api_key=56097ac8c6cf97b680539ef25f536f32&text=["+$("#inputNomDeVille").val()+"]&format=json&nojsoncallback=?&per_page="+$("#nombreDePhoto").val(), function (response) {
       console.log(response)
-      $("#tableOnglet-2 tbody").empty()
+      $("#tableOnglet-2").empty().append("<thead><tr><th>Image</th><th>Titre</th><th>Description</th><th>Propriétaire</th><th>Date</th></tr></thead><tbody></tbody>")
       $("#onglet-1").empty();
-      if (response.photos.pages >= 0) {
+      if (response.photos.photo.length > 0) {
         for (photo of response.photos.photo) {
           console.log("<img src='https://farm"+photo.farm+".staticflickr.com/"+photo.server+"/"+photo.id+"_"+photo.secret+".jpg'>")
-          $("#onglet-1").append("<img src='https://farm"+photo.farm+".staticflickr.com/"+photo.server+"/"+photo.id+"_"+photo.secret+".jpg'>")
+
           $.get("http://api.flickr.com/services/rest/?&method=flickr.photos.getInfo&api_key=56097ac8c6cf97b680539ef25f536f32&photo_id="+photo.id+"&format=json&nojsoncallback=?", function (response2) {
-            console.log(response2)
-            $("#tableOnglet-2 tbody").append("<tr><td><img src='https://farm"+response2.photo.farm+".staticflickr.com/"+response2.photo.server+"/"+response2.photo.id+"_"+response2.photo.secret+".jpg'></td><td>"+response2.photo.description._content+"</td><td>"+response2.photo.owner.username+"</td></tr>")
+            $("#onglet-1").append("<img data-id="+response2.photo.id+"   src='https://farm"+response2.photo.farm+".staticflickr.com/"+response2.photo.server+"/"+response2.photo.id+"_"+response2.photo.secret+".jpg' data-desc='"+response2.photo.description._content+"'>")
+
+            $("#tableOnglet-2 tbody").append("<tr><td><img src='https://farm"+response2.photo.farm+".staticflickr.com/"+response2.photo.server+"/"+response2.photo.id+"_"+response2.photo.secret+".jpg'></td><td>"+response2.photo.title._content+"</td><td>"+response2.photo.description._content+"</td><td>"+response2.photo.owner.username+"</td><td>"+response2.photo.dates.taken+"</td></tr>")
 
             $("#tableOnglet-2").DataTable()
+            $('img').on("click", function(event) {
+              $(".ui-dialog-content").dialog("close");
+              console.log(event)
+                $("#info").attr("title","Description")
+
+                if (event.target.attributes[2].nodeValue == "") {
+                  $("#info").empty().append("<p>Pas de description</p>")
+                } else {
+                  $("#info").empty().append("<p>"+event.target.attributes[2].nodeValue+"</p>")
+                }
+              $("#info").dialog('open');
+            });
           })
         }
+      } else {
+        $("#noImage").dialog('open');
       }
     })
   })
