@@ -32,9 +32,11 @@ $(window).on('load', function () {
   $("#faireRequete").on("click", function() {
     $.get("http://api.flickr.com/services/rest/?&method=flickr.photos.search&api_key=56097ac8c6cf97b680539ef25f536f32&text=["+$("#inputNomDeVille").val()+"]&format=json&nojsoncallback=?&per_page="+$("#nombreDePhoto").val(), function (response) {
       console.log(response)
+      $("#photos").empty();
       if (response.photos.pages >= 0) {
         for (photo of response.photos.photo) {
-          $("#photos").append("<img src='"+https://farmp+photo.farm+.staticflickr.com/+photo.server+/{+photo.secret+.jpg+"'>")
+          console.log("<img src='https://farm"+photo.farm+".staticflickr.com/"+photo.server+"/"+photo.id+"_"+photo.secret+".jpg'>")
+          $("#photos").append("<img src='https://farm"+photo.farm+".staticflickr.com/"+photo.server+"/"+photo.id+"_"+photo.secret+".jpg'>")
         }
       }
     })
