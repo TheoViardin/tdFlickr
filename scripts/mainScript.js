@@ -1,9 +1,18 @@
 $(window).on('load', function () {
+
+  //Modal information image onglet 1
   jQuery( '#info' ).dialog( { 'autoOpen': false } );
+
+  //Modal pas d'image trouvée onglet 2
   jQuery( '#noImage' ).dialog( { 'autoOpen': false } );
 
   //Onglets
   $( "#onglets" ).tabs();
+
+  //Séléction date
+  $(function() {
+    $("#date").datepicker();
+  });
 
 //Liste nombre photo
   for (let j = 1; j < 100; j++) {
