@@ -4,8 +4,8 @@
 }
 
 #inputNomDeVille {
-    width: 94%;
-    padding: 12px 20px;
+    width: 55%;
+    padding: 8px 20px;
     margin: 8px 0;
     border: 1px solid #ccc;
     border-radius: 4px;
@@ -45,6 +45,18 @@
   float: right;
 }
 
-form {
-  background-color: #e14827;
+#TitleProjet {
+  font-family: 'Poppins', sans-serif;
+  padding-right: 100px;
+  padding-left: 20px;
+  color: #FFFFFF
+}
+
+.FormVilles  {
+  background-color: rgba(25,24,24,0.7);
+}
+
+
+body {
+  margin: 0;
 }
