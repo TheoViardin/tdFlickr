@@ -27,7 +27,6 @@ $(window).on('load', function () {
   $( "#inputNomDeVille" ).autocomplete({
     source: function (request, response) {
       $.get("https://vicopo.selfbuild.fr/ville/"+$("#inputNomDeVille").val()+"?format=callback", function (reponse) {
-        console.log(reponse)
         if (reponse.cities.length>3) {
           let sourceArray = [];
           for (let i = 0; i < 3; i++) {
@@ -45,8 +44,6 @@ $(window).on('load', function () {
 
   $("#faireRequete").on("click", function() {
     $.get("http://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=dc96eac4784f4c3f7a051dd0363ca4a3&text=["+$("#inputNomDeVille").val()+"]&format=json&nojsoncallback=?&per_page="+$("#nombreDePhoto").val(), function (response) {
-      console.log(response)
-      console.log($("#date").datepicker("getDate"))
       if ($("#date").datepicker("getDate") == null) {
         $("#tableOnglet-2").empty().append("<thead><tr><th>Image</th><th>Titre</th><th>Description</th><th>Propriétaire</th><th>Date</th></tr></thead><tbody></tbody>")
         $("#onglet-1").empty();
@@ -60,7 +57,6 @@ $(window).on('load', function () {
               $("#tableOnglet-2").DataTable()
               $('.ongl1').on("click", function(event) {
                 $(".ui-dialog-content").dialog("close");
-                console.log(event)
                   $("#info").attr("title","Description")
 
                   if (event.target.attributes[3].nodeValue == "") {
@@ -91,7 +87,6 @@ $(window).on('load', function () {
       } else {
         let dateString = $("#date").datepicker("getDate")
         let date = new Date(dateString)
-        console.log(date.getDay())
         $("#tableOnglet-2").empty().append("<thead><tr><th>Image</th><th>Titre</th><th>Description</th><th>Propriétaire</th><th>Date</th></tr></thead><tbody></tbody>")
         $("#onglet-1").empty();
         if (response.photos.photo.length > 0) {
@@ -105,7 +100,6 @@ $(window).on('load', function () {
                 $("#tableOnglet-2").DataTable()
                 $('.ongl1').on("click", function(event) {
                   $(".ui-dialog-content").dialog("close");
-                  console.log(event)
                     $("#info").attr("title","Description")
 
                     if (event.target.attributes[3].nodeValue == "") {
