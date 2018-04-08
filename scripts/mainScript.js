@@ -23,12 +23,11 @@ $(window).on('load', function () {
   var tags = [];
   $( "#inputNomDeVille" ).autocomplete({
     source: function (request, response) {
-      $.get("http://infoweb-ens/~jacquin-c/codePostal/commune.php?commune="+$("#inputNomDeVille").val()+"&maxRows=3", function (reponse) {
-        let i = 0
+      $.get("https://vicopo.selfbuild.fr/ville/"+$("#inputNomDeVille").val()+"?format=callback", function (reponse) {
+        console.log(reponse)
         let sourceArray = [];
-        for (ville of reponse) {
-          sourceArray[i] = {label:ville.Ville, value:ville.Ville}
-          i++
+        for (let i = 0; i < 3; i++) {
+          sourceArray[i] = {label:reponse.cities[i].city, value:reponse.cities[i].city}
         }
         response(sourceArray)
       })
@@ -40,7 +39,7 @@ $(window).on('load', function () {
   });
 
   $("#faireRequete").on("click", function() {
-    $.get("http://api.flickr.com/services/rest/?&method=flickr.photos.search&api_key=56097ac8c6cf97b680539ef25f536f32&text=["+$("#inputNomDeVille").val()+"]&format=json&nojsoncallback=?&per_page="+$("#nombreDePhoto").val(), function (response) {
+    $.get("http://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=dc96eac4784f4c3f7a051dd0363ca4a3&text=["+$("#inputNomDeVille").val()+"]&format=json&nojsoncallback=?&per_page="+$("#nombreDePhoto").val(), function (response) {
       console.log(response)
       $("#tableOnglet-2").empty().append("<thead><tr><th>Image</th><th>Titre</th><th>Description</th><th>Propriétaire</th><th>Date</th></tr></thead><tbody></tbody>")
       $("#onglet-1").empty();
@@ -48,7 +47,7 @@ $(window).on('load', function () {
         for (photo of response.photos.photo) {
           console.log("<img src='https://farm"+photo.farm+".staticflickr.com/"+photo.server+"/"+photo.id+"_"+photo.secret+".jpg'>")
 
-          $.get("http://api.flickr.com/services/rest/?&method=flickr.photos.getInfo&api_key=56097ac8c6cf97b680539ef25f536f32&photo_id="+photo.id+"&format=json&nojsoncallback=?", function (response2) {
+          $.get("http://api.flickr.com/services/rest/?method=flickr.photos.getInfo&api_key=dc96eac4784f4c3f7a051dd0363ca4a3&photo_id="+photo.id+"&format=json&nojsoncallback=?", function (response2) {
             $("#onglet-1").append("<img data-id="+response2.photo.id+"   src='https://farm"+response2.photo.farm+".staticflickr.com/"+response2.photo.server+"/"+response2.photo.id+"_"+response2.photo.secret+".jpg' data-desc='"+response2.photo.description._content+"'>")
 
             $("#tableOnglet-2 tbody").append("<tr><td><img src='https://farm"+response2.photo.farm+".staticflickr.com/"+response2.photo.server+"/"+response2.photo.id+"_"+response2.photo.secret+".jpg'></td><td>"+response2.photo.title._content+"</td><td>"+response2.photo.description._content+"</td><td>"+response2.photo.owner.username+"</td><td>"+response2.photo.dates.taken+"</td></tr>")
