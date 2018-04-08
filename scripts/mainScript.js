@@ -50,7 +50,6 @@ $(window).on('load', function () {
         if (response.photos.photo.length > 0) {
           for (photo of response.photos.photo) {
             $.get("http://api.flickr.com/services/rest/?method=flickr.photos.getInfo&api_key=dc96eac4784f4c3f7a051dd0363ca4a3&photo_id="+photo.id+"&format=json&nojsoncallback=?", function (response2) {
-              console.log(response2)
               $("#onglet-1").append("<img class='ongl1' data-id="+response2.photo.id+"   src='https://farm"+response2.photo.farm+".staticflickr.com/"+response2.photo.server+"/"+response2.photo.id+"_"+response2.photo.secret+".jpg' data-desc='"+response2.photo.description._content+"' data-owner='"+response2.photo.owner.username+"' data-heure='"+response2.photo.dates.taken+"' data-name='"+response2.photo.title._content+"'>")
 
               $("#tableOnglet-2 tbody").append("<tr><td><img class='ongl2' style='width:100px; height:auto;' src='https://farm"+response2.photo.farm+".staticflickr.com/"+response2.photo.server+"/"+response2.photo.id+"_"+response2.photo.secret+".jpg'></td><td>"+response2.photo.title._content+"</td><td>"+response2.photo.description._content+"</td><td>"+response2.photo.owner.username+"</td><td>"+response2.photo.dates.taken+"</td></tr>")
@@ -94,7 +93,6 @@ $(window).on('load', function () {
           for (photo of response.photos.photo) {
             $.get("http://api.flickr.com/services/rest/?method=flickr.photos.getInfo&api_key=dc96eac4784f4c3f7a051dd0363ca4a3&photo_id="+photo.id+"&format=json&nojsoncallback=?", function (response2) {
               if (new Date(response2.photo.dates.taken).getTime() > date.getTime()) {
-                console.log(response2)
                 $("#onglet-1").append("<img class='ongl1' data-id="+response2.photo.id+"   src='https://farm"+response2.photo.farm+".staticflickr.com/"+response2.photo.server+"/"+response2.photo.id+"_"+response2.photo.secret+".jpg' data-desc='"+response2.photo.description._content+"' data-owner='"+response2.photo.owner.username+"' data-heure='"+response2.photo.dates.taken+"' data-name='"+response2.photo.title._content+"'>")
 
                 $("#tableOnglet-2 tbody").append("<tr><td><img class='ongl2' style='width:100px; height:auto;' src='https://farm"+response2.photo.farm+".staticflickr.com/"+response2.photo.server+"/"+response2.photo.id+"_"+response2.photo.secret+".jpg'></td><td>"+response2.photo.title._content+"</td><td>"+response2.photo.description._content+"</td><td>"+response2.photo.owner.username+"</td><td>"+response2.photo.dates.taken+"</td></tr>")
