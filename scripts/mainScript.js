@@ -1,3 +1,4 @@
+// Evenement lancé au chargement de la page
 $(window).on('load', function () {
 
   //Modal information image onglet 1
@@ -26,113 +27,116 @@ $(window).on('load', function () {
   var tags = [];
   $( "#inputNomDeVille" ).autocomplete({
     source: function (request, response) {
-      $.get("https://vicopo.selfbuild.fr/ville/"+$("#inputNomDeVille").val()+"?format=callback", function (reponse) {
+      $.get("https://vicopo.selfbuild.fr/ville/"+$("#inputNomDeVille").val()+"?format=callback", function (reponse) { // Recupere une liste de villes en fonction du string entré
         if (reponse.cities.length>3) {
           let sourceArray = [];
-          for (let i = 0; i < 3; i++) {
-            sourceArray[i] = {label:reponse.cities[i].city, value:reponse.cities[i].city}
+          for (let i = 0; i < 3; i++) { // On ne garde que 3 trois des villes
+            sourceArray[i] = {label:reponse.cities[i].city, value:reponse.cities[i].city} // On ajoute les villes dans l'autocomplete
           }
           response(sourceArray)
         }
       })
     },
-    select: function () {
+    select: function () { // Lorsque l'utilisateur clic sur une ville proposée, on simule une clic sur le bouton de recherche
       $("#faireRequete").click()
     },
-    minLength: 3
+    minLength: 3 // La source ne se met à jour que si l'utilisateur entre minimum trois caractères
   });
 
-  $("#faireRequete").on("click", function() {
-    $.get("http://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=56097ac8c6cf97b680539ef25f536f32&text=["+$("#inputNomDeVille").val()+"]&format=json&nojsoncallback=?&per_page="+$("#nombreDePhoto").val(), function (response) {
-      if ($("#date").datepicker("getDate") == null) {
-        $("#tableOnglet-2").empty().append("<thead><tr><th>Image</th><th>Titre</th><th>Description</th><th>Propriétaire</th><th>Date</th></tr></thead><tbody></tbody>")
-        $("#onglet-1").empty();
-        if (response.photos.photo.length > 0) {
-          for (photo of response.photos.photo) {
-            $.get("http://api.flickr.com/services/rest/?method=flickr.photos.getInfo&api_key=56097ac8c6cf97b680539ef25f536f32&photo_id="+photo.id+"&format=json&nojsoncallback=?", function (response2) {
-              $("#onglet-1").append("<img class='ongl1' data-id="+response2.photo.id+"   src='https://farm"+response2.photo.farm+".staticflickr.com/"+response2.photo.server+"/"+response2.photo.id+"_"+response2.photo.secret+".jpg' data-desc='"+response2.photo.description._content+"' data-owner='"+response2.photo.owner.username+"' data-heure='"+response2.photo.dates.taken+"' data-name='"+response2.photo.title._content+"'>")
 
+// Fonction qui effectue les differentes requetes et affiche les photos et leurs informations
+  $("#faireRequete").on("click", function() { // Lorque l'on clic sur le bouton de recherche
+  // On effectue la requete sur l'API de flickr qui renvoie des objects contenant les informations sur les dernieres photos en rapport avec la ville selectionnée
+    $.get("http://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=56097ac8c6cf97b680539ef25f536f32&text=["+$("#inputNomDeVille").val()+"]&format=json&nojsoncallback=?&per_page="+$("#nombreDePhoto").val(), function (response) {
+      // Si aucune date n'a été selectionnée, on affiche simplement les photos
+      if ($("#date").datepicker("getDate") == null) {
+        $("#tableOnglet-2").empty().append("<thead><tr><th>Image</th><th>Titre</th><th>Description</th><th>Propriétaire</th><th>Date</th></tr></thead><tbody></tbody>") // Entete du tableau de l'onglet 2
+        $("#onglet-1").empty(); // On vide l'onglet au cas ou une recherche ai deja ete faite
+        if (response.photos.photo.length > 0) { // Si il y a bien une ou des photos dans la reponse de l'API
+          for (photo of response.photos.photo) { // On traite chaque photo une par une
+            // On fait une nouvelle requete par photo qui permet de recupérer plus de détails sur celle-ci en utilisant son ID
+            $.get("http://api.flickr.com/services/rest/?method=flickr.photos.getInfo&api_key=56097ac8c6cf97b680539ef25f536f32&photo_id="+photo.id+"&format=json&nojsoncallback=?", function (response2) {
+              // On affiche les images les une à la suite des autres dans l'onglet 1 en stockant les informations dans des attributs data html
+              $("#onglet-1").append("<img class='ongl1' data-id="+response2.photo.id+" src='https://farm"+response2.photo.farm+".staticflickr.com/"+response2.photo.server+"/"+response2.photo.id+"_"+response2.photo.secret+".jpg' data-desc='"+response2.photo.description._content+"' data-owner='"+response2.photo.owner.username+"' data-heure='"+response2.photo.dates.taken+"' data-name='"+response2.photo.title._content+"'>")
+              // On ajoute une ligne de tableau par image avec l'image en taille reduite suivie de ses informations
               $("#tableOnglet-2 tbody").append("<tr><td><img class='ongl2' style='width:100px; height:auto;' src='https://farm"+response2.photo.farm+".staticflickr.com/"+response2.photo.server+"/"+response2.photo.id+"_"+response2.photo.secret+".jpg'></td><td>"+response2.photo.title._content+"</td><td>"+response2.photo.description._content+"</td><td>"+response2.photo.owner.username+"</td><td>"+response2.photo.dates.taken+"</td></tr>")
 
-              $("#tableOnglet-2").DataTable()
-              $('.ongl1').on("click", function(event) {
-                $(".ui-dialog-content").dialog("close");
-                  $("#info").attr("title","Description")
+              $("#tableOnglet-2").DataTable() // On actualise la jQuery UI DataTable à chaque ajout de photos
+              $('.ongl1').on("click", function(event) { // Au clique sur les images de l'onglet 1, on affiche une boite de dialogue
+                $(".ui-dialog-content").dialog("close"); // On ferme les boites de dialogue deja ouvertes
+                $("#info").attr("title","Description") // On change les informations de la boite de dialogue
 
-                  if (event.target.attributes[3].nodeValue == "") {
+                  if (event.target.attributes[3].nodeValue == "") { // Si il n'y a pas de description, on affiche le message suivant
                     $("#info").empty().append("<p>Pas de description</p>")
-                  } else {
+                  } else { // Sinon on affiche les informations de l'image qui sont stockés dans des attributs data html
                     $("#info").empty().append("<p>Description : "+event.target.attributes[3].nodeValue+"<br>Propriétaire : "+event.target.attributes[4].nodeValue+"<br>Date : "+event.target.attributes[5].nodeValue+"<br>Titre : "+event.target.attributes[6].nodeValue+"<br></p>")
+                    // On s'assure de bien vider la boite de dialogue avant d'affiche quoi que ce soit dedans
                   }
-                $("#info").dialog('open');
+                $("#info").dialog('open'); // On ouvre la boite de dialogue
               });
 
-              $('.ongl2').on("click", function(event) {
-                $(".ui-dialog-content").dialog("close");
-                  $("#image").attr("title","Description")
-
-                  if (event.target.attributes[2].nodeValue == "") {
-                    $("#image").empty().append("<p>Pas de description</p>")
-                  } else {
-                    $("#image").empty().append("<img src='"+event.target.attributes[2].nodeValue+"'>")
-                    $( "#image" ).dialog( "option", "width", 700 )
-                  }
-                $("#image").dialog('open');
+              $('.ongl2').on("click", function(event) { // Au clique sur les images de l'onglet 2, on affiche une boite de dialogue avec l'image en taille réelle
+                $(".ui-dialog-content").dialog("close"); // On ferme les boites de dialogue deja ouvertes
+                $("#image").attr("title","Description") // On change les informations de la boite de dialogue
+                $("#image").empty().append("<img src='"+event.target.attributes[2].nodeValue+"'>") // On affiche l'image en taille réelle
+                // On s'assure de bien vider la boite de dialogue avant d'affiche quoi que ce soit dedans
+                $( "#image" ).dialog( "option", "width", 700 ) // On agrandi un peut la taille de la boite de dialogue pour ne pas avoir besoins de scroller pour voir l'image en entier
+                $("#image").dialog('open'); // On ouvre la boite de dialogue
               });
             })
           }
         } else {
-          $("#noImage").dialog('open');
+          $("#noImage").dialog('open'); // Si il n'y a pas d'image dans la reponse à la requete, on affiche un modal pour le dire
         }
-      } else {
-        let dateString = $("#date").datepicker("getDate")
-        let date = new Date(dateString)
-        $("#tableOnglet-2").empty().append("<thead><tr><th>Image</th><th>Titre</th><th>Description</th><th>Propriétaire</th><th>Date</th></tr></thead><tbody></tbody>")
-        $("#onglet-1").empty();
-        if (response.photos.photo.length > 0) {
-          for (photo of response.photos.photo) {
+      } else { // Si une date a bien été selectionnée
+        let dateString = $("#date").datepicker("getDate") // On recupere la date
+        let date = new Date(dateString) // On la met dans un objet de type Date()
+        $("#tableOnglet-2").empty().append("<thead><tr><th>Image</th><th>Titre</th><th>Description</th><th>Propriétaire</th><th>Date</th></tr></thead><tbody></tbody>") // Entete du tableau de l'onglet 2
+        $("#onglet-1").empty(); // On vide l'onglet au cas ou une recherche ai deja ete faite
+        if (response.photos.photo.length > 0) { // Si il y a bien une ou des photos dans la reponse de l'API
+          for (photo of response.photos.photo) { // On traite chaque photo une par une
+            // On fait une nouvelle requete par photo qui permet de recupérer plus de détails sur celle-ci en utilisant son ID
             $.get("http://api.flickr.com/services/rest/?method=flickr.photos.getInfo&api_key=56097ac8c6cf97b680539ef25f536f32&photo_id="+photo.id+"&format=json&nojsoncallback=?", function (response2) {
-              if (new Date(response2.photo.dates.taken).getTime() > date.getTime()) {
+              if (new Date(response2.photo.dates.taken).getTime() > date.getTime()) { // Si les images sont plus récentes que la date selectionnée
+                // On affiche les images les une à la suite des autres dans l'onglet 1 en stockant les informations dans des attributs data html
                 $("#onglet-1").append("<img class='ongl1' data-id="+response2.photo.id+"   src='https://farm"+response2.photo.farm+".staticflickr.com/"+response2.photo.server+"/"+response2.photo.id+"_"+response2.photo.secret+".jpg' data-desc='"+response2.photo.description._content+"' data-owner='"+response2.photo.owner.username+"' data-heure='"+response2.photo.dates.taken+"' data-name='"+response2.photo.title._content+"'>")
-
+                // On ajoute une ligne de tableau par image avec l'image en taille reduite suivie de ses informations
                 $("#tableOnglet-2 tbody").append("<tr><td><img class='ongl2' style='width:100px; height:auto;' src='https://farm"+response2.photo.farm+".staticflickr.com/"+response2.photo.server+"/"+response2.photo.id+"_"+response2.photo.secret+".jpg'></td><td>"+response2.photo.title._content+"</td><td>"+response2.photo.description._content+"</td><td>"+response2.photo.owner.username+"</td><td>"+response2.photo.dates.taken+"</td></tr>")
 
-                $("#tableOnglet-2").DataTable()
-                $('.ongl1').on("click", function(event) {
-                  $(".ui-dialog-content").dialog("close");
-                    $("#info").attr("title","Description")
+                $("#tableOnglet-2").DataTable() // On actualise la jQuery UI DataTable à chaque ajout de photos
+                $('.ongl1').on("click", function(event) { // Au clique sur les images de l'onglet 1, on affiche une boite de dialogue
+                  $(".ui-dialog-content").dialog("close"); // On ferme les boites de dialogue deja ouvertes
+                  $("#info").attr("title","Description") // On change les informations de la boite de dialogue
 
-                    if (event.target.attributes[3].nodeValue == "") {
+                    if (event.target.attributes[3].nodeValue == "") { // Si il n'y a pas de description, on affiche le message suivant
                       $("#info").empty().append("<p>Pas de description</p>")
-                    } else {
+                    } else { // Sinon on affiche les informations de l'image qui sont stockés dans des attributs data html
                       $("#info").empty().append("<p>Description : "+event.target.attributes[3].nodeValue+"<br>Propriétaire : "+event.target.attributes[4].nodeValue+"<br>Date : "+event.target.attributes[5].nodeValue+"<br>Titre : "+event.target.attributes[6].nodeValue+"<br></p>")
+                      // On s'assure de bien vider la boite de dialogue avant d'affiche quoi que ce soit dedans
                     }
-                  $("#info").dialog('open');
+                  $("#info").dialog('open'); // On ouvre la boite de dialogue
                 });
 
-                $('.ongl2').on("click", function(event) {
-                  $(".ui-dialog-content").dialog("close");
-                    $("#image").attr("title","Description")
-
-                    if (event.target.attributes[2].nodeValue == "") {
-                      $("#image").empty().append("<p>Pas de description</p>")
-                    } else {
-                      $("#image").empty().append("<img src='"+event.target.attributes[2].nodeValue+"'>")
-                      $( "#image" ).dialog( "option", "width", 700 )
-                    }
-                  $("#image").dialog('open');
+                $('.ongl2').on("click", function(event) { // Au clique sur les images de l'onglet 2, on affiche une boite de dialogue avec l'image en taille réelle
+                  $(".ui-dialog-content").dialog("close"); // On ferme les boites de dialogue deja ouvertes
+                  $("#image").attr("title","Description") // On change les informations de la boite de dialogue
+                  $("#image").empty().append("<img src='"+event.target.attributes[2].nodeValue+"'>") // On affiche l'image en taille réelle
+                  // On s'assure de bien vider la boite de dialogue avant d'affiche quoi que ce soit dedans
+                  $( "#image" ).dialog( "option", "width", 700 ) // On agrandi un peut la taille de la boite de dialogue pour ne pas avoir besoins de scroller pour voir l'image en entier
+                  $("#image").dialog('open'); // On ouvre la boite de dialogue
                 });
               }
             })
           }
         } else {
-          $("#noImage").dialog('open');
+          $("#noImage").dialog('open'); // Si il n'y a pas d'image dans la reponse à la requete, on affiche un modal pour le dire
         }
       }
     })
   })
 
 
+// Fonction qui ferme toutes les boites de dialogue quand on passe d'un onglet à un autre
   $(".onglet").on("click", function() {
     $(".ui-dialog-content").dialog("close");
   })
