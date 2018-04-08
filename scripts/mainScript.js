@@ -3,6 +3,9 @@ $(window).on('load', function () {
   //Modal information image onglet 1
   jQuery( '#info' ).dialog( { 'autoOpen': false } );
 
+  //Modal grande image onglet 2
+  jQuery( '#image' ).dialog( { 'autoOpen': false } );
+
   //Modal pas d'image trouvée onglet 2
   jQuery( '#noImage' ).dialog( { 'autoOpen': false } );
 
@@ -45,25 +48,39 @@ $(window).on('load', function () {
       $("#onglet-1").empty();
       if (response.photos.photo.length > 0) {
         for (photo of response.photos.photo) {
-          console.log("<img src='https://farm"+photo.farm+".staticflickr.com/"+photo.server+"/"+photo.id+"_"+photo.secret+".jpg'>")
+          console.log("<img style='width:100px; height:auto;' src='https://farm"+photo.farm+".staticflickr.com/"+photo.server+"/"+photo.id+"_"+photo.secret+".jpg'>")
 
           $.get("http://api.flickr.com/services/rest/?method=flickr.photos.getInfo&api_key=dc96eac4784f4c3f7a051dd0363ca4a3&photo_id="+photo.id+"&format=json&nojsoncallback=?", function (response2) {
-            $("#onglet-1").append("<img data-id="+response2.photo.id+"   src='https://farm"+response2.photo.farm+".staticflickr.com/"+response2.photo.server+"/"+response2.photo.id+"_"+response2.photo.secret+".jpg' data-desc='"+response2.photo.description._content+"'>")
+            $("#onglet-1").append("<img class='ongl1' data-id="+response2.photo.id+"   src='https://farm"+response2.photo.farm+".staticflickr.com/"+response2.photo.server+"/"+response2.photo.id+"_"+response2.photo.secret+".jpg' data-desc='"+response2.photo.description._content+"'>")
 
-            $("#tableOnglet-2 tbody").append("<tr><td><img src='https://farm"+response2.photo.farm+".staticflickr.com/"+response2.photo.server+"/"+response2.photo.id+"_"+response2.photo.secret+".jpg'></td><td>"+response2.photo.title._content+"</td><td>"+response2.photo.description._content+"</td><td>"+response2.photo.owner.username+"</td><td>"+response2.photo.dates.taken+"</td></tr>")
+            $("#tableOnglet-2 tbody").append("<tr><td><img class='ongl2' style='width:100px; height:auto;' src='https://farm"+response2.photo.farm+".staticflickr.com/"+response2.photo.server+"/"+response2.photo.id+"_"+response2.photo.secret+".jpg'></td><td>"+response2.photo.title._content+"</td><td>"+response2.photo.description._content+"</td><td>"+response2.photo.owner.username+"</td><td>"+response2.photo.dates.taken+"</td></tr>")
 
             $("#tableOnglet-2").DataTable()
-            $('img').on("click", function(event) {
+            $('.ongl1').on("click", function(event) {
               $(".ui-dialog-content").dialog("close");
               console.log(event)
                 $("#info").attr("title","Description")
 
-                if (event.target.attributes[2].nodeValue == "") {
+                if (event.target.attributes[3].nodeValue == "") {
                   $("#info").empty().append("<p>Pas de description</p>")
                 } else {
-                  $("#info").empty().append("<p>"+event.target.attributes[2].nodeValue+"</p>")
+                  $("#info").empty().append("<p>"+event.target.attributes[3].nodeValue+"</p>")
                 }
               $("#info").dialog('open');
+            });
+
+            $('.ongl2').on("click", function(event) {
+              $(".ui-dialog-content").dialog("close");
+              console.log(event)
+                $("#image").attr("title","Description")
+
+                if (event.target.attributes[2].nodeValue == "") {
+                  $("#image").empty().append("<p>Pas de description</p>")
+                } else {
+                  $("#image").empty().append("<img src='"+event.target.attributes[2].nodeValue+"'>")
+                  $( "#image" ).dialog( "option", "width", 700 )
+                }
+              $("#image").dialog('open');
             });
           })
         }
@@ -71,6 +88,11 @@ $(window).on('load', function () {
         $("#noImage").dialog('open');
       }
     })
+  })
+
+
+  $(".onglet").on("click", function() {
+    $(".ui-dialog-content").dialog("close");
   })
 
 });
